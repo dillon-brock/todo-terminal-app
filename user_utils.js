@@ -39,5 +39,3 @@ async function signOutUser() {
 }
 
 module.exports = { signUpUser, signInUser, signOutUser };
-// const cookieInfo = cookie.parse(res.headers.raw()['set-cookie'][0])
-//Cookie: cookie.serialize('session', userCookie.session) in headers for any subsequent fetches to authenticated routes

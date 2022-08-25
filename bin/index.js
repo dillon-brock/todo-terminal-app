@@ -4,7 +4,7 @@ const chalk = require("chalk");
 require("dotenv").config();
 const cookie = require("cookie");
 const { ModuleGraph } = require("vite");
-const { listTodos, addTodo } = require("../todo_utils");
+const { listTodos, addTodo, deleteTodo } = require("../todo_utils");
 const { signInUser, signUpUser } = require("../user_utils");
 
 console.log("\n");
@@ -34,9 +34,9 @@ function logCommands() {
   console.log("\n");
   console.log(`Here are some commands to get you started:`);
   console.log(`list: list all of your todos`);
-  console.log(`create [task]: create a new todo`);
+  console.log(`add [task]: create a new todo`);
   console.log(`complete [id]: complete a task on your todo list`);
-  console.log(`remove [id]: remove a task from your todo list`);
+  console.log(`remove [task]: remove a task from your todo list`);
   console.log(`logout: log out of your account`);
   console.log("help: see this list again");
   console.log("  --------------");
@@ -44,17 +44,12 @@ function logCommands() {
 
 async function run(user, cookieInfo) {
   usedCommands = [];
-  const validCommands = [
-    "list",
-    "create",
-    "complete",
-    "remove",
-    "help",
-    "logout",
-  ];
+  const validCommands = ["list", "add", "complete", "remove", "help", "logout"];
   do {
     let command = prompt(chalk.blue("What would you like to do? "));
-    let commandArg = command.split(" ")[1];
+    let splitCommand = command.split(" ");
+    splitCommand.shift();
+    let task;
     while (!validCommands.includes(command.split(" ")[0])) {
       command = prompt("Please enter a valid command: ");
     }
@@ -63,11 +58,7 @@ async function run(user, cookieInfo) {
         const todos = await listTodos(cookieInfo);
         console.log(todos);
         break;
-      case "create":
-        console.log("creating!");
-        let splitCommand = command.split(" ");
-        splitCommand.shift();
-        let task;
+      case "add":
         if (splitCommand.length > 1) {
           task = splitCommand.join(" ");
         } else {
@@ -76,8 +67,23 @@ async function run(user, cookieInfo) {
         const newTodo = await addTodo(cookieInfo, task);
         console.log(`${task} has been added to your todo list!`);
         break;
+      case "remove":
+        if (splitCommand.length > 1) {
+          task = splitCommand.join(" ");
+        } else {
+          task = splitCommand[0];
+        }
+        const userTodos = await listTodos(cookieInfo);
+        const todoToBeDeleted = findTodoByTask(userTodos, task);
+        await deleteTodo(cookieInfo, todoToBeDeleted.id);
+        console.log(`${task} has been removed from your todo list!`);
+        break;
     }
   } while (!usedCommands.includes("logout"));
+}
+
+function findTodoByTask(todos, task) {
+  return todos.find((todo) => todo.task === task);
 }
 
 (async () => {

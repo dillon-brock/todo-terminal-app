@@ -33,4 +33,15 @@ async function addTodo(userCookie, todo) {
   return newTodo;
 }
 
-module.exports = { listTodos, addTodo };
+async function deleteTodo(userCookie, id) {
+  const res = await fetch(`${process.env.API_URL}/api/v1/todos/${id}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      Cookie: cookie.serialize("session", userCookie.session),
+    },
+    credentials: "include",
+  });
+}
+
+module.exports = { listTodos, addTodo, deleteTodo };

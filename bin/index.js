@@ -4,6 +4,7 @@ const chalk = require("chalk");
 require("dotenv").config();
 const cookie = require("cookie");
 const { ModuleGraph } = require("vite");
+const { listTodos } = require("../todo_utils");
 const { signInUser, signUpUser } = require("../user_utils");
 
 console.log("\n");
@@ -41,17 +42,33 @@ function logCommands() {
   console.log("  --------------");
 }
 
-// function run(user, cookieInfo) {
-//   usedCommands = [];
-//   do {
-//     const command = prompt(chalk.blue("What would you like to do? "));
-//   } while (!usedCommands.includes("logout"));
-// }
+async function run(user, cookieInfo) {
+  usedCommands = [];
+  const validCommands = [
+    "list",
+    "create",
+    "complete",
+    "remove",
+    "help",
+    "logout",
+  ];
+  do {
+    let command = prompt(chalk.blue("What would you like to do? "));
+    let commandArg = command.split(" ")[1];
+    while (!validCommands.includes(command.split(" ")[0])) {
+      command = prompt("Please enter a valid command: ");
+    }
+    switch (command) {
+      case "list":
+        const todos = await listTodos(cookieInfo);
+        console.log(todos);
+        break;
+    }
+  } while (!usedCommands.includes("logout"));
+}
 
 (async () => {
   const [user, cookieInfo] = await userPrompts();
   logCommands();
-  // run(user, cookieInfo);
+  run(user, cookieInfo);
 })();
-
-module.exports = { cookieInfo, user };

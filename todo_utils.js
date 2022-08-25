@@ -33,6 +33,19 @@ async function addTodo(userCookie, todo) {
   return newTodo;
 }
 
+async function completeTodo(userCookie, id) {
+  const res = await fetch(`${process.env.API_URL}/api/v1/todos/${id}`, {
+    method: "PUT",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Cookie: cookie.serialize("session", userCookie.session),
+    },
+    credentials: "include",
+    body: JSON.stringify({ completed: true }),
+  });
+}
+
 async function deleteTodo(userCookie, id) {
   const res = await fetch(`${process.env.API_URL}/api/v1/todos/${id}`, {
     method: "DELETE",
@@ -44,4 +57,4 @@ async function deleteTodo(userCookie, id) {
   });
 }
 
-module.exports = { listTodos, addTodo, deleteTodo };
+module.exports = { listTodos, addTodo, deleteTodo, completeTodo };

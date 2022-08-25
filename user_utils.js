@@ -31,6 +31,13 @@ async function signInUser(email, password) {
   return [cookieInfo, user];
 }
 
-module.exports = { signUpUser, signInUser };
+async function signOutUser() {
+  const res = await fetch(`${process.env.API_URL}/api/v1/users`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
+
+module.exports = { signUpUser, signInUser, signOutUser };
 // const cookieInfo = cookie.parse(res.headers.raw()['set-cookie'][0])
 //Cookie: cookie.serialize('session', userCookie.session) in headers for any subsequent fetches to authenticated routes

@@ -10,7 +10,7 @@ const {
   deleteTodo,
   completeTodo,
 } = require("../todo_utils");
-const { signInUser, signUpUser } = require("../user_utils");
+const { signInUser, signUpUser, signOutUser } = require("../user_utils");
 
 console.log("\n");
 console.log(chalk.magenta("Your To Do App"));
@@ -48,7 +48,7 @@ function logCommands() {
 }
 
 async function run(user, cookieInfo) {
-  usedCommands = [];
+  let loggedOut = false;
   const validCommands = ["list", "add", "complete", "remove", "help", "logout"];
   do {
     let command = prompt(chalk.blue("What would you like to do? "));
@@ -86,8 +86,12 @@ async function run(user, cookieInfo) {
         await completeTodo(cookieInfo, todoToBeCompleted);
         console.log(`${task} has been completed!`);
         break;
+      case "logout":
+        loggedOut = true;
+        await signOutUser();
+        console.log("You've been signed out! Goodbye!");
     }
-  } while (!usedCommands.includes("logout"));
+  } while (!loggedOut);
 }
 
 function findTodoIdByTask(todos, task) {

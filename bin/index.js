@@ -4,7 +4,7 @@ const chalk = require("chalk");
 require("dotenv").config();
 const cookie = require("cookie");
 const { ModuleGraph } = require("vite");
-const { listTodos } = require("../todo_utils");
+const { listTodos, addTodo } = require("../todo_utils");
 const { signInUser, signUpUser } = require("../user_utils");
 
 console.log("\n");
@@ -58,10 +58,23 @@ async function run(user, cookieInfo) {
     while (!validCommands.includes(command.split(" ")[0])) {
       command = prompt("Please enter a valid command: ");
     }
-    switch (command) {
+    switch (command.split(" ")[0]) {
       case "list":
         const todos = await listTodos(cookieInfo);
         console.log(todos);
+        break;
+      case "create":
+        console.log("creating!");
+        let splitCommand = command.split(" ");
+        splitCommand.shift();
+        let task;
+        if (splitCommand.length > 1) {
+          task = splitCommand.join(" ");
+        } else {
+          task = splitCommand[0];
+        }
+        const newTodo = await addTodo(cookieInfo, task);
+        console.log(`${task} has been added to your todo list!`);
         break;
     }
   } while (!usedCommands.includes("logout"));

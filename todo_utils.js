@@ -17,4 +17,20 @@ async function listTodos(userCookie) {
   return todos;
 }
 
-module.exports = { listTodos };
+async function addTodo(userCookie, todo) {
+  const res = await fetch(`${process.env.API_URL}/api/v1/todos`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Cookie: cookie.serialize("session", userCookie.session),
+    },
+    body: JSON.stringify({ task: todo }),
+    credentials: "include",
+  });
+
+  const newTodo = await res.json();
+  return newTodo;
+}
+
+module.exports = { listTodos, addTodo };
